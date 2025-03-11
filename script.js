@@ -22,7 +22,8 @@ function resizeCanvas() {
 let player = {
     x: 30, y: 0, width: 150, height: 150, dy: 0,
     gravity: 0.5, jumpPower: -12, isJumping: false,
-    bullets: [], health: 3, scale: 1, canShoot: true
+    bullets: [], health: 3, scale: 1,
+    lastShotTime: 0, shootCooldown: 200 // Cooldown in milliseconds
 };
 resizeCanvas();
 
@@ -69,20 +70,20 @@ function update() {
         player.dy = 0;
         player.isJumping = false;
     }
-    
+
     // Update Bullets
     for (let i = player.bullets.length - 1; i >= 0; i--) {
         let bullet = player.bullets[i];
         bullet.x += 10;
         if (bullet.x > canvas.width) player.bullets.splice(i, 1);
     }
-    
+
     // Update Enemies
     for (let i = enemies.length - 1; i >= 0; i--) {
         let enemy = enemies[i];
         enemy.x -= enemy.speed;
         if (enemy.x + enemy.width < 0) enemies.splice(i, 1);
-        
+
         // Collision with Bullets
         for (let j = player.bullets.length - 1; j >= 0; j--) {
             let bullet = player.bullets[j];
@@ -94,7 +95,7 @@ function update() {
                 break;
             }
         }
-        
+
         // Collision with Player
         if (player.x < enemy.x + enemy.width && player.x + player.width > enemy.x) {
             enemies.splice(i, 1);
@@ -105,7 +106,7 @@ function update() {
             }
         }
     }
-    
+
     // Update PowerUps
     for (let i = powerUps.length - 1; i >= 0; i--) {
         let powerUp = powerUps[i];
@@ -125,10 +126,11 @@ function draw() {
     player.bullets.forEach(bullet => ctx.fillRect(bullet.x, bullet.y, 10, 5));
     enemies.forEach(enemy => ctx.drawImage(images.enemy, enemy.x, enemy.y, enemy.width, enemy.height));
     powerUps.forEach(powerUp => ctx.drawImage(images.powerUp, powerUp.x, powerUp.y, powerUp.width, powerUp.height));
-    
+
     ctx.fillStyle = "yellow";
     ctx.font = "bold 24px Arial";
     ctx.fillText(`Score: ${score}`, 20, 40);
+
     ctx.fillStyle = "red";
     ctx.fillText(`Health: ${player.health}`, 20, 70);
 }
@@ -147,12 +149,13 @@ window.addEventListener("keydown", (e) => {
         player.isJumping = true;
     }
 });
+
 canvas.addEventListener("click", () => {
-    if (player.canShoot) {
-        player.canShoot = false;
+    let currentTime = Date.now();
+    if (currentTime - player.lastShotTime >= player.shootCooldown) {
+        player.lastShotTime = currentTime;
         player.bullets.push({ x: player.x + player.width, y: player.y + 20, width: 10, height: 5 });
         sounds.bullet.cloneNode().play();
-        setTimeout(() => player.canShoot = true, 200); // Prevent rapid shooting
     }
 });
 
