@@ -38,7 +38,7 @@ const images = {
 };
 
 // Set image sources
-images.player.src = "shooting_player.png";
+images.player.src = "Shooting_player.png";
 images.enemy.src = "dianasore.png";
 images.powerUp.src = "powerup.png";
 
