@@ -22,7 +22,7 @@ function resizeCanvas() {
 let player = {
     x: 30, y: 0, width: 150, height: 150, dy: 0,
     gravity: 0.5, jumpPower: -12, isJumping: false,
-    bullets: [], health: 3, scale: 1
+    bullets: [], health: 3, scale: 1, canShoot: true
 };
 resizeCanvas();
 
@@ -148,8 +148,12 @@ window.addEventListener("keydown", (e) => {
     }
 });
 canvas.addEventListener("click", () => {
-    player.bullets.push({ x: player.x + player.width, y: player.y + 20, width: 10, height: 5 });
-    sounds.bullet.cloneNode().play();
+    if (player.canShoot) {
+        player.canShoot = false;
+        player.bullets.push({ x: player.x + player.width, y: player.y + 20, width: 10, height: 5 });
+        sounds.bullet.cloneNode().play();
+        setTimeout(() => player.canShoot = true, 200); // Prevent rapid shooting
+    }
 });
 
 // 🕒 Timers
