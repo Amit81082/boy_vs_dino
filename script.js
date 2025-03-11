@@ -40,7 +40,7 @@ const images = {
 // Set image sources
 images.player.src = "shooting_player.png";
 images.enemy.src = "dianasore.png";
-images.powerUp.src = "powerUp.png";
+images.powerUp.src = "powerup.png";
 
 // Check if all images are loaded
 let imagesLoaded = 0;
