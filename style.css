@@ -1,0 +1,60 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;                          /* Default margin हटाया ताकि background full screen cover करे */
+    padding: 0;                         /* Default padding भी remove किया */
+    height: 100vh;                      /* पूरी viewport height तक stretch होगा */
+
+    background: url('body_background_2.jpg') 
+                no-repeat 
+                center center 
+                fixed;                   /* Image center में set होगी, scroll करने पर move नहीं करेगी */
+    background-color: black;
+    background-size: cover;              /* Image को पूरा screen cover करने के लिए */
+    overflow: hidden;                     /* Scrolling को रोकने के लिए */
+    animation: backgroundVibrate 1.5s infinite linear; /* Slower & Softer Vibration */
+}
+
+@keyframes backgroundVibrate {
+    0% { background-position: center center; }  
+    25% { background-position: calc(50% + 0.5px) calc(50% + 0.5px); }  
+    50% { background-position: calc(50% - 0.5px) calc(50% - 0.5px); }  
+    75% { background-position: calc(50% + 0.5px) calc(50% - 0.5px); }  
+    100% { background-position: calc(50% - 0.5px) calc(50% + 0.5px); }  
+}
+
+
+canvas {
+    display: block;
+    margin: auto;
+    width: 100vw;                         /* Canvas पूरी screen width लेगा */
+    height: 100vh;                        /* Canvas पूरी screen height लेगा */
+}
+
+@keyframes playerZoom {
+    0% { transform: scale(1); }  
+    50% { transform: scale(1.2); }  
+    100% { transform: scale(1); }  
+}
+
+.zoom-effect {
+    animation: playerZoom 0.5s ease-in;
+}
+  
+
+@keyframes zoomPlayer {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+.zoom {
+    animation: zoomPlayer 0.3s ease-in-out;
+}
+
+
+
