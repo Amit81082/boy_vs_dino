@@ -72,51 +72,44 @@ function update() {
     }
 
     // Update Bullets
-    for (let i = player.bullets.length - 1; i >= 0; i--) {
-        let bullet = player.bullets[i];
-        bullet.x += 10;
-        if (bullet.x > canvas.width) player.bullets.splice(i, 1);
-    }
+    player.bullets = player.bullets.filter(bullet => bullet.x < canvas.width);
+    player.bullets.forEach(bullet => bullet.x += 10);
 
     // Update Enemies
-    for (let i = enemies.length - 1; i >= 0; i--) {
-        let enemy = enemies[i];
+    enemies = enemies.filter(enemy => enemy.x + enemy.width > 0);
+    enemies.forEach((enemy, i) => {
         enemy.x -= enemy.speed;
-        if (enemy.x + enemy.width < 0) enemies.splice(i, 1);
-
-        // Collision with Bullets
-        for (let j = player.bullets.length - 1; j >= 0; j--) {
-            let bullet = player.bullets[j];
+        
+        player.bullets.forEach((bullet, j) => {
             if (bullet.x < enemy.x + enemy.width && bullet.x + bullet.width > enemy.x) {
                 enemies.splice(i, 1);
                 player.bullets.splice(j, 1);
                 score += 5;
                 sounds.enemyHit.cloneNode().play();
-                break;
             }
-        }
+        });
 
-        // Collision with Player
         if (player.x < enemy.x + enemy.width && player.x + player.width > enemy.x) {
             enemies.splice(i, 1);
             player.health--;
             if (player.health <= 0) {
                 isGameOver = true;
                 sounds.gameOver.play();
+                setTimeout(() => location.reload(), 3000); // Auto-restart
             }
         }
-    }
+    });
 
     // Update PowerUps
-    for (let i = powerUps.length - 1; i >= 0; i--) {
-        let powerUp = powerUps[i];
+    powerUps = powerUps.filter(powerUp => powerUp.x + powerUp.width > 0);
+    powerUps.forEach((powerUp, i) => {
         powerUp.x -= 4;
         if (player.x < powerUp.x + powerUp.width && player.x + player.width > powerUp.x) {
             player.health++;
             powerUps.splice(i, 1);
             sounds.powerUp.cloneNode().play();
         }
-    }
+    });
 }
 
 // 🎨 Draw Game Elements
