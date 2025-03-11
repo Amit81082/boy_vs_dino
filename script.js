@@ -27,7 +27,7 @@ let player = {
 resizeCanvas();
 
 // 👾 Enemy & PowerUps
-let enemies = [], powerUps = [], score = 0, gameOver = false;
+let enemies = [], powerUps = [], score = 0, isGameOver = false;
 
 // 🎮 Load Images
 const images = {
@@ -39,10 +39,14 @@ images.powerUp.src = "powerUp.png";
 
 // 🚀 Spawn Functions
 function spawnEnemy() {
-    enemies.push({ x: canvas.width + Math.random() * 200, y: canvas.height - 160, width: 180, height: 150, speed: 3 + Math.random() * 3 });
+    if (!isGameOver) {
+        enemies.push({ x: canvas.width + Math.random() * 200, y: canvas.height - 160, width: 180, height: 150, speed: 3 + Math.random() * 3 });
+    }
 }
 function spawnPowerUp() {
-    powerUps.push({ x: canvas.width + Math.random() * 200, y: canvas.height - 160, width: 30, height: 30, effect: "health" });
+    if (!isGameOver) {
+        powerUps.push({ x: canvas.width + Math.random() * 200, y: canvas.height - 160, width: 30, height: 30, effect: "health" });
+    }
 }
 
 // 🏃 Draw Functions
@@ -56,7 +60,7 @@ function drawPlayer() {
 
 // 🔄 Update Game State
 function update() {
-    if (gameOver) return;
+    if (isGameOver) return;
 
     player.dy += player.gravity;
     player.y += player.dy;
@@ -66,38 +70,52 @@ function update() {
         player.isJumping = false;
     }
     
-    player.bullets.forEach(bullet => bullet.x += 10);
-    player.bullets = player.bullets.filter(bullet => bullet.x < canvas.width);
+    // Update Bullets
+    for (let i = player.bullets.length - 1; i >= 0; i--) {
+        let bullet = player.bullets[i];
+        bullet.x += 10;
+        if (bullet.x > canvas.width) player.bullets.splice(i, 1);
+    }
     
-    enemies.forEach((enemy, i) => {
+    // Update Enemies
+    for (let i = enemies.length - 1; i >= 0; i--) {
+        let enemy = enemies[i];
         enemy.x -= enemy.speed;
         if (enemy.x + enemy.width < 0) enemies.splice(i, 1);
-        player.bullets.forEach((bullet, j) => {
+        
+        // Collision with Bullets
+        for (let j = player.bullets.length - 1; j >= 0; j--) {
+            let bullet = player.bullets[j];
             if (bullet.x < enemy.x + enemy.width && bullet.x + bullet.width > enemy.x) {
                 enemies.splice(i, 1);
                 player.bullets.splice(j, 1);
                 score += 5;
                 sounds.enemyHit.cloneNode().play();
+                break;
             }
-        });
+        }
+        
+        // Collision with Player
         if (player.x < enemy.x + enemy.width && player.x + player.width > enemy.x) {
             enemies.splice(i, 1);
             player.health--;
             if (player.health <= 0) {
-                gameOver = true;
+                isGameOver = true;
                 sounds.gameOver.play();
             }
         }
-    });
+    }
     
-    powerUps.forEach((powerUp, i) => {
+    // Update PowerUps
+    for (let i = powerUps.length - 1; i >= 0; i--) {
+        let powerUp = powerUps[i];
         powerUp.x -= 4;
         if (player.x < powerUp.x + powerUp.width && player.x + player.width > powerUp.x) {
             player.health++;
             powerUps.splice(i, 1);
             sounds.powerUp.cloneNode().play();
         }
-    });
+    }
 }
 
 // 🎨 Draw Game Elements
@@ -119,7 +137,7 @@ function draw() {
 function gameLoop() {
     update();
     draw();
-    requestAnimationFrame(gameLoop);
+    if (!isGameOver) requestAnimationFrame(gameLoop);
 }
 
 // 🕹️ Controls
@@ -129,13 +147,9 @@ window.addEventListener("keydown", (e) => {
         player.isJumping = true;
     }
 });
-canvas.addEventListener("click", (e) => {
-    if (e.clientX >= player.x && e.clientX <= player.x + player.width && e.clientY >= player.y && e.clientY <= player.y + player.height) {
-        player.scale = 1.2;
-        setTimeout(() => player.scale = 1, 300);
-        player.bullets.push({ x: player.x + player.width, y: player.y + 20, width: 10, height: 5 });
-        sounds.bullet.cloneNode().play();
-    }
+canvas.addEventListener("click", () => {
+    player.bullets.push({ x: player.x + player.width, y: player.y + 20, width: 10, height: 5 });
+    sounds.bullet.cloneNode().play();
 });
 
 // 🕒 Timers
