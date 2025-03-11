@@ -30,13 +30,47 @@ resizeCanvas();
 // 👾 Enemy & PowerUps
 let enemies = [], powerUps = [], score = 0, isGameOver = false;
 
-// 🎮 Load Images
+// 🎮 Load Images with onload to Prevent 'Broken State' Error
 const images = {
-    player: new Image(), enemy: new Image(), powerUp: new Image()
+    player: new Image(),
+    enemy: new Image(),
+    powerUp: new Image()
 };
-images.player.src = "Shooting_player.png";
+
+// Set image sources
+images.player.src = "shooting_player.png";
 images.enemy.src = "dianasore.png";
 images.powerUp.src = "powerUp.png";
+
+// Check if all images are loaded
+let imagesLoaded = 0;
+const totalImages = Object.keys(images).length;
+
+Object.values(images).forEach(img => {
+    img.onload = () => {
+        imagesLoaded++;
+        if (imagesLoaded === totalImages) {
+            console.log("✅ All images loaded successfully!");
+            gameLoop();  // Start game only after all images are loaded
+        }
+    };
+    img.onerror = () => {
+        console.error(`❌ Error loading image: ${img.src}`);
+    };
+});
+
+
+console.log("🔄 Checking image loading...");
+
+images.player.onload = () => console.log("✅ Player image loaded!");
+images.enemy.onload = () => console.log("✅ Enemy image loaded!");
+images.powerUp.onload = () => console.log("✅ PowerUp image loaded!");
+
+images.player.onerror = () => console.error("❌ Failed to load player image!");
+images.enemy.onerror = () => console.error("❌ Failed to load enemy image!");
+images.powerUp.onerror = () => console.error("❌ Failed to load power-up image!");
+
+
 
 // 🚀 Spawn Functions
 function spawnEnemy() {
