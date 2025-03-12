@@ -268,7 +268,7 @@ canvas.addEventListener("click", () => {
         player.lastShotTime = currentTime;
 
         // 🔫 Bullet Fire
-        player.bullets.push({ x: player.x + player.width, y: player.y + 20, width: 10, height: 5 });
+        player.bullets.push({ x: player.x + player.width, y: player.y + 37, width: 10, height: 5 });
         sounds.bullet.cloneNode().play();
 
         // 🔥 Smooth Scale Effect
@@ -293,7 +293,7 @@ canvas.addEventListener("click", () => {
 });
 
 // 🕒 Timers
-setInterval(spawnEnemy, 2000);
+setInterval(spawnEnemy, 1800);
 setInterval(spawnPowerUp, 12000);
 
 // 🚀 Start Game
