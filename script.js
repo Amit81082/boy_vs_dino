@@ -15,8 +15,11 @@ Object.values(sounds).forEach(sound => { sound.preload = "auto"; sound.volume = 
 function resizeCanvas() {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-    player.y = canvas.height - player.height - 20;
+
+    // ✅ Player को हमेशा screen के bottom पर रखना
+    player.y = canvas.height - player.height - 10;
 }
+
 
 // 🏃 Player Object
 let player = {
@@ -75,7 +78,8 @@ images.powerUp.onerror = () => console.error("❌ Failed to load power-up image!
 // 🚀 Spawn Functions
 function spawnEnemy() {
     if (!isGameOver) {
-        enemies.push({ x: canvas.width + Math.random() * 200, y: canvas.height - 160, width: 180, height: 150, speed: 3 + Math.random() * 3 });
+        enemies.push({ x: canvas.width + Math.random() * 200, y: canvas.height - 150,  // ✅ Enemy को ठीक से ज़मीन पर रखना
+            width: 180, height: 150, speed: 3 + Math.random() * 3 });
     }
 }
 function spawnPowerUp() {
@@ -281,6 +285,14 @@ setInterval(spawnEnemy, 2000);
 setInterval(spawnPowerUp, 12000);
 
 // 🚀 Start Game
-window.addEventListener("resize", resizeCanvas);
+window.addEventListener("resize", () => {
+    resizeCanvas();
+
+    // ✅ Resize होने पर player और enemies नीचे ही रहें
+    player.y = canvas.height - player.height - 10;
+    enemies.forEach(enemy => {
+        enemy.y = canvas.height - 150;
+    });
+});
 resizeCanvas();
 gameLoop();
