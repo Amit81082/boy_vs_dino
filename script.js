@@ -11,25 +11,6 @@ const sounds = {
 };
 Object.values(sounds).forEach(sound => { sound.preload = "auto"; sound.volume = 0.5; });
 
-// 🎮 Resize Canvas
-function resizeCanvas() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-
-    // ✅ Player को हमेशा screen के bottom पर रखना
-    player.y = canvas.height - player.height - 10;
-}
-
-
-// 🏃 Player Object
-let player = {
-    x: 30, y: 0, width: 150, height: 150, dy: 0,
-    gravity: 0.3, jumpPower: -12, isJumping: false,
-    bullets: [], health: 3, scale: 1,
-    lastShotTime: 0, shootCooldown: 200 // Cooldown in milliseconds
-};
-resizeCanvas();
-
 // 👾 Enemy & PowerUps
 let enemies = [], powerUps = [], score = 0, isGameOver = false;
 
@@ -72,6 +53,41 @@ images.powerUp.onload = () => console.log("✅ PowerUp image loaded!");
 images.player.onerror = () => console.error("❌ Failed to load player image!");
 images.enemy.onerror = () => console.error("❌ Failed to load enemy image!");
 images.powerUp.onerror = () => console.error("❌ Failed to load power-up image!");
+
+
+
+// 🎮 Resize Canvas
+function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    // ✅ Player को हमेशा नीचे रखना
+    player.y = canvas.height - player.height - 20;
+
+    // ✅ Enemies को नीचे रखना
+    enemies.forEach(enemy => {
+        enemy.y = canvas.height - enemy.height - 20;
+    });
+
+    // ✅ PowerUps को भी सही position पर रखना
+    powerUps.forEach(powerUp => {
+        powerUp.y = canvas.height - powerUp.height - 50;
+    });
+}
+
+
+
+// 🏃 Player Object
+let player = {
+    x: 30, y: 0, width: 150, height: 150, dy: 0,
+    gravity: 0.3, jumpPower: -12, isJumping: false,
+    bullets: [], health: 3, scale: 1,
+    lastShotTime: 0, shootCooldown: 200 // Cooldown in milliseconds
+};
+resizeCanvas();
+
+
+
 
 
 
