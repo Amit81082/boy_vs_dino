@@ -4,6 +4,34 @@
     box-sizing: border-box;
 }
 
+
+h1 {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #ffcc00;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    text-shadow: 0 0 10px #ff6600, 0 0 20px #ff3300;
+    animation: glow 1.5s infinite alternate, scaleUp 1s ease-in-out;
+}
+
+@keyframes glow {
+    0% { text-shadow: 0 0 10px #ff6600, 0 0 20px #ff3300; }
+    100% { text-shadow: 0 0 20px #ff9900, 0 0 30px #ff6600; }
+}
+
+@keyframes scaleUp {
+    0% { transform: scale(0.8); }
+    100% { transform: scale(1); }
+}
+
+/* Responsive Text Size */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 1.1rem;
+    }
+}
+
 body {
     margin: 0;                          /* Default margin हटाया ताकि background full screen cover करे */
     padding: 0;                         /* Default padding भी remove किया */
@@ -16,7 +44,7 @@ body {
     background-color: black;
     background-size: cover;              /* Image को पूरा screen cover करने के लिए */
     overflow: hidden;                     /* Scrolling को रोकने के लिए */
-    animation: backgroundVibrate 1.5s infinite linear; /* Slower & Softer Vibration */
+    animation: backgroundVibrate 1s infinite linear; /* Slower & Softer Vibration */
 }
 
 @keyframes backgroundVibrate {
@@ -55,6 +83,9 @@ canvas {
 .zoom {
     animation: zoomPlayer 0.3s ease-in-out;
 }
+
+
+
 
 
 

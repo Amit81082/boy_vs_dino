@@ -21,7 +21,7 @@ function resizeCanvas() {
 // 🏃 Player Object
 let player = {
     x: 30, y: 0, width: 150, height: 150, dy: 0,
-    gravity: 0.5, jumpPower: -12, isJumping: false,
+    gravity: 0.3, jumpPower: -12, isJumping: false,
     bullets: [], health: 3, scale: 1,
     lastShotTime: 0, shootCooldown: 200 // Cooldown in milliseconds
 };
@@ -150,8 +150,19 @@ function update() {
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawPlayer();
-    player.bullets.forEach(bullet => ctx.fillRect(bullet.x, bullet.y, 10, 5));
-    enemies.forEach(enemy => ctx.drawImage(images.enemy, enemy.x, enemy.y, enemy.width, enemy.height));
+    player.bullets.forEach((bullet, index) => {
+        bullet.x += 15;  // 🔥 Increase Speed for Smooth Effect
+    
+        // 💨 Trail Effect (Optional)
+        ctx.fillStyle = "rgb(255, 10, 10)";
+        ctx.fillRect(bullet.x - 5, bullet.y, 5, bullet.height);
+    
+        // 🚀 Bullet Remove if Out of Screen
+        if (bullet.x > canvas.width) {
+            player.bullets.splice(index, 1);
+        }
+    });
+        enemies.forEach(enemy => ctx.drawImage(images.enemy, enemy.x, enemy.y, enemy.width, enemy.height));
     powerUps.forEach(powerUp => ctx.drawImage(images.powerUp, powerUp.x, powerUp.y, powerUp.width, powerUp.height));
 
     ctx.fillStyle = "yellow";
@@ -179,11 +190,35 @@ window.addEventListener("keydown", (e) => {
 
 canvas.addEventListener("click", () => {
     let currentTime = Date.now();
+   
+
+     
     if (currentTime - player.lastShotTime >= player.shootCooldown) {
         player.lastShotTime = currentTime;
+        
+        // 🔫 Bullet Fire
         player.bullets.push({ x: player.x + player.width, y: player.y + 20, width: 10, height: 5 });
         sounds.bullet.cloneNode().play();
+
+        // 🔥 Smooth Scale Effect
+        let scaleUp = 1.1;
+        let scaleDown = 1;
+        
+        let duration = 100; // Animation Duration in ms
+        let startTime = performance.now();
+
+        function animateScale(time) {
+            let progress = (time - startTime) / duration;
+            if (progress < 1) {
+                player.scale = scaleUp - (scaleUp - scaleDown) * progress;
+                requestAnimationFrame(animateScale);
+            } else {
+                player.scale = scaleDown;
+            }
+        }
+        requestAnimationFrame(animateScale);
     }
+
 });
 
 // 🕒 Timers
