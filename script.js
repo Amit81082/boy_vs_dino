@@ -56,26 +56,20 @@ images.powerUp.onerror = () => console.error("❌ Failed to load power-up image!
 
 
 
-// 🎮 Resize Canvas
+
 // 🎮 Resize Canvas
 function resizeCanvas() {
     canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    canvas.height = document.documentElement.clientHeight; // Instead of window.innerHeight
 
-    // ✅ Player को हमेशा नीचे रखना
     player.y = canvas.height - player.height - 10;
-
-    // ✅ Enemies और PowerUps को adjust करना
-    enemies.forEach(enemy => {
-        enemy.y = canvas.height - enemy.height - 10;
-    });
-
-    powerUps.forEach(powerUp => {
-        powerUp.y = canvas.height - powerUp.height - 50;
-    });
+    enemies.forEach(enemy => enemy.y = canvas.height - enemy.height - 10);
+    powerUps.forEach(powerUp => powerUp.y = canvas.height - powerUp.height - 50);
 
     console.log(`Canvas Resized: ${canvas.width}x${canvas.height}`);
 }
+
+
 
 
 
