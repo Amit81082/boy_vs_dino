@@ -92,6 +92,10 @@ function drawPlayer() {
     ctx.drawImage(images.player, -player.width / 2, -player.height / 2, player.width, player.height);
     ctx.restore();
 }
+function updateScoreHealth() {
+    document.querySelector(".score").innerText = `Score: ${score}`;
+    document.querySelector(".health").innerText = `Health: ${player.health}`;
+}
 
 // 🔄 Update Game State
 function update() {
@@ -105,20 +109,17 @@ function update() {
         player.isJumping = false;
     }
 
-    // Update Bullets
-    player.bullets = player.bullets.filter(bullet => bullet.x < canvas.width);
-    player.bullets.forEach(bullet => bullet.x += 10);
-
     // Update Enemies
     enemies = enemies.filter(enemy => enemy.x + enemy.width > 0);
     enemies.forEach((enemy, i) => {
         enemy.x -= enemy.speed;
-        
+
         player.bullets.forEach((bullet, j) => {
             if (bullet.x < enemy.x + enemy.width && bullet.x + bullet.width > enemy.x) {
                 enemies.splice(i, 1);
                 player.bullets.splice(j, 1);
                 score += 5;
+                updateScoreHealth(); // 🎯 Score update
                 sounds.enemyHit.cloneNode().play();
             }
         });
@@ -126,21 +127,80 @@ function update() {
         if (player.x < enemy.x + enemy.width && player.x + player.width > enemy.x) {
             enemies.splice(i, 1);
             player.health--;
+            updateScoreHealth(); // 🏆 Health update
             if (player.health <= 0) {
                 isGameOver = true;
                 sounds.gameOver.play();
-                setTimeout(() => location.reload(), 3000); // Auto-restart
+                showGameOverScreen(); // 🔥 Game Over Screen दिखाने के लिए नई function call की
             }
         }
     });
 
+
+    function showGameOverScreen() {
+        const gameOverScreen = document.createElement("div");
+        gameOverScreen.id = "gameOverScreen";
+        gameOverScreen.innerHTML = `
+            <h2>Game Over</h2>
+            <p>Score: ${score}</p>
+            <button id="restartButton">Restart</button>
+        `;
+
+        // 🎨 Styling for Game Over Screen
+        gameOverScreen.style.position = "fixed";
+        gameOverScreen.style.top = "50%";
+        gameOverScreen.style.left = "50%";
+        gameOverScreen.style.transform = "translate(-50%, -50%)";
+        gameOverScreen.style.background = "rgba(0, 0, 0, 0.8)";
+        gameOverScreen.style.color = "white";
+        gameOverScreen.style.padding = "20px";
+        gameOverScreen.style.borderRadius = "10px";
+        gameOverScreen.style.textAlign = "center";
+        gameOverScreen.style.fontSize = "24px";
+        gameOverScreen.style.zIndex = "1000";
+
+        // 🛠️ Restart Button Styling
+        const restartButton = gameOverScreen.querySelector("#restartButton");
+        restartButton.style.background = "red";
+        restartButton.style.color = "white";
+        restartButton.style.padding = "10px 20px";
+        restartButton.style.border = "none";
+        restartButton.style.borderRadius = "5px";
+        restartButton.style.cursor = "pointer";
+        restartButton.style.fontSize = "20px";
+        restartButton.style.marginTop = "10px";
+
+        document.body.appendChild(gameOverScreen);
+
+        // 🔁 Restart Button Event Listener
+        restartButton.addEventListener("click", restartGame);
+    }
+
+
+
+    function restartGame() {
+        document.getElementById("gameOverScreen").remove();
+        score = 0;
+        player.health = 3;
+        isGameOver = false;
+        enemies = [];
+        powerUps = [];
+        player.bullets = [];
+        gameLoop();
+    }
+
+
+
+
+
+
     // Update PowerUps
-    powerUps = powerUps.filter(powerUp => powerUp.x + powerUp.width > 0);
     powerUps.forEach((powerUp, i) => {
         powerUp.x -= 4;
         if (player.x < powerUp.x + powerUp.width && player.x + player.width > powerUp.x) {
             player.health++;
             powerUps.splice(i, 1);
+            updateScoreHealth(); // 🎯 PowerUp se health badh gayi
             sounds.powerUp.cloneNode().play();
         }
     });
@@ -152,25 +212,20 @@ function draw() {
     drawPlayer();
     player.bullets.forEach((bullet, index) => {
         bullet.x += 15;  // 🔥 Increase Speed for Smooth Effect
-    
+
         // 💨 Trail Effect (Optional)
         ctx.fillStyle = "rgb(255, 10, 10)";
         ctx.fillRect(bullet.x - 5, bullet.y, 5, bullet.height);
-    
+
         // 🚀 Bullet Remove if Out of Screen
         if (bullet.x > canvas.width) {
             player.bullets.splice(index, 1);
         }
     });
-        enemies.forEach(enemy => ctx.drawImage(images.enemy, enemy.x, enemy.y, enemy.width, enemy.height));
+    enemies.forEach(enemy => ctx.drawImage(images.enemy, enemy.x, enemy.y, enemy.width, enemy.height));
     powerUps.forEach(powerUp => ctx.drawImage(images.powerUp, powerUp.x, powerUp.y, powerUp.width, powerUp.height));
 
-    ctx.fillStyle = "yellow";
-    ctx.font = "bold 24px Arial";
-    ctx.fillText(`Score: ${score}`, 20, 40);
 
-    ctx.fillStyle = "red";
-    ctx.fillText(`Health: ${player.health}`, 20, 70);
 }
 
 // 🎮 Game Loop
@@ -190,12 +245,12 @@ window.addEventListener("keydown", (e) => {
 
 canvas.addEventListener("click", () => {
     let currentTime = Date.now();
-   
 
-     
+
+
     if (currentTime - player.lastShotTime >= player.shootCooldown) {
         player.lastShotTime = currentTime;
-        
+
         // 🔫 Bullet Fire
         player.bullets.push({ x: player.x + player.width, y: player.y + 20, width: 10, height: 5 });
         sounds.bullet.cloneNode().play();
@@ -203,7 +258,7 @@ canvas.addEventListener("click", () => {
         // 🔥 Smooth Scale Effect
         let scaleUp = 1.1;
         let scaleDown = 1;
-        
+
         let duration = 100; // Animation Duration in ms
         let startTime = performance.now();
 

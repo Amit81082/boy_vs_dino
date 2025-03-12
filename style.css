@@ -4,38 +4,75 @@
     box-sizing: border-box;
 }
 
+body {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    background: url('background.jpg') no-repeat center center/cover;
+    margin: 0;
+    text-align: center;
+    position: relative;
+    height: auto;
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+
+.game-header {
+    margin-top: 15px; /* Gameplay ke liye jagah chhodna */
+    text-align: center;
+    padding: 10px 20px;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 10px;
+    backdrop-filter: blur(5px);
+    display: flex;
+    flex-direction: column; /* 🎯 Ensures score-health is below heading */
+    align-items: center;
+}
 
 h1 {
     font-size: 2rem;
     font-weight: bold;
     color: #ffcc00;
     text-transform: uppercase;
-    letter-spacing: 3px;
+    letter-spacing: 2px;
     text-shadow: 0 0 10px #ff6600, 0 0 20px #ff3300;
-    animation: glow 1.5s infinite alternate, scaleUp 1s ease-in-out;
+    animation: glow 1.5s infinite alternate;
 }
 
 @keyframes glow {
     0% { text-shadow: 0 0 10px #ff6600, 0 0 20px #ff3300; }
-    100% { text-shadow: 0 0 20px #ff9900, 0 0 30px #ff6600; }
+    100% { text-shadow: 0 0 15px #ff9900, 0 0 25px #ff6600; }
 }
 
-@keyframes scaleUp {
-    0% { transform: scale(0.8); }
-    100% { transform: scale(1); }
+
+.score-health {
+    display: flex;
+    gap: 40px;
+    font-size: 1.4rem;
+    font-weight: bold;
+    margin-top: 10px; /* 🏆 Heading ke neeche gap */
 }
 
-/* Responsive Text Size */
+.score {
+    color: yellow;
+    text-shadow: 0 0 10px yellow, 0 0 20px gold;
+}
+
+.health {
+    color: red;
+    text-shadow: 0 0 10px red, 0 0 20px darkred;
+}
+
 @media (max-width: 768px) {
-    h1 {
-        font-size: 1.1rem;
-    }
+    h1 { font-size: 2rem; }
+    .score-health { font-size: 1.2rem; gap: 20px; }
 }
 
 body {
     margin: 0;                          /* Default margin हटाया ताकि background full screen cover करे */
     padding: 0;                         /* Default padding भी remove किया */
-    height: 100vh;                      /* पूरी viewport height तक stretch होगा */
 
     background: url('body_background_2.jpg') 
                 no-repeat 
@@ -60,7 +97,8 @@ canvas {
     display: block;
     margin: auto;
     width: 100vw;                         /* Canvas पूरी screen width लेगा */
-    height: 100vh;                        /* Canvas पूरी screen height लेगा */
+    height: 80vh;                        /* Canvas पूरी screen height लेगा */
+    max-height: 600px;
 }
 
 @keyframes playerZoom {
