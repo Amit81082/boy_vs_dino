@@ -20,6 +20,10 @@ const images = {
     enemy: new Image(),
     powerUp: new Image()
 };
+// 🔫 Bullet Image Load
+images.bullet = new Image();
+images.bullet.src = "bulletimage.png"; // यहाँ अपनी bullet की सही image path डालो
+
 
 // Set image sources
 images.player.src = "Shooting_player.png";
@@ -46,6 +50,9 @@ Object.values(images).forEach(img => {
 
 console.log("🔄 Checking image loading...");
 
+
+
+images.bullet.onload = () => console.log("✅ Bullet Image Loaded Successfully!");
 images.player.onload = () => console.log("✅ Player image loaded!");
 images.enemy.onload = () => console.log("✅ Enemy image loaded!");
 images.powerUp.onload = () => console.log("✅ PowerUp image loaded!");
@@ -53,6 +60,7 @@ images.powerUp.onload = () => console.log("✅ PowerUp image loaded!");
 images.player.onerror = () => console.error("❌ Failed to load player image!");
 images.enemy.onerror = () => console.error("❌ Failed to load enemy image!");
 images.powerUp.onerror = () => console.error("❌ Failed to load power-up image!");
+images.bullet.onerror = () => console.error("❌ Bullet Image Loading Failed!");
 
 
 
@@ -96,7 +104,7 @@ function spawnEnemy() {
 }
 function spawnPowerUp() {
     if (!isGameOver) {
-        powerUps.push({ x: canvas.width + Math.random() * 200, y: canvas.height - 160, width: 30, height: 30, effect: "health" });
+        powerUps.push({ x: canvas.width + Math.random() * 200, y: canvas.height - 160, width: 60, height: 60, effect: "health" });
     }
 }
 
@@ -227,17 +235,17 @@ function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawPlayer();
     player.bullets.forEach((bullet, index) => {
-        bullet.x += 15;  // 🔥 Increase Speed for Smooth Effect
-
-        // 💨 Trail Effect (Optional)
-        ctx.fillStyle = "rgb(255, 10, 10)";
-        ctx.fillRect(bullet.x - 5, bullet.y, 5, bullet.height);
-
-        // 🚀 Bullet Remove if Out of Screen
+        bullet.x += 15;  // 🔥 Bullet Speed
+    
+        // 🎯 Bullet को Image के साथ Draw करें
+        ctx.drawImage(images.bullet, bullet.x, bullet.y, bullet.width, bullet.height);
+    
+        // 🚀 अगर Bullet Screen से बाहर चली गई तो Remove कर दो
         if (bullet.x > canvas.width) {
             player.bullets.splice(index, 1);
         }
     });
+    
     enemies.forEach(enemy => ctx.drawImage(images.enemy, enemy.x, enemy.y, enemy.width, enemy.height));
     powerUps.forEach(powerUp => ctx.drawImage(images.powerUp, powerUp.x, powerUp.y, powerUp.width, powerUp.height));
 
@@ -267,8 +275,14 @@ canvas.addEventListener("click", () => {
     if (currentTime - player.lastShotTime >= player.shootCooldown) {
         player.lastShotTime = currentTime;
 
-        // 🔫 Bullet Fire
-        player.bullets.push({ x: player.x + player.width, y: player.y + 37, width: 10, height: 5 });
+          // 🔫 Bullet Fire with Image
+          player.bullets.push({
+            x: player.x + player.width,
+            y: player.y + 33,  
+            width: 40, // 📏 Bullet का Size Set करो
+            height: 20 
+        });
+
         sounds.bullet.cloneNode().play();
 
         // 🔥 Smooth Scale Effect
