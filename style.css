@@ -6,10 +6,16 @@
     overflow: hidden;
 }
 
-/* Fullscreen Body Setup */
+@keyframes hypnoticGravity {
+    0% { background-position: 50% 50%; transform: scale(1); }
+    25% { background-position: 52% 48%; transform: scale(1.05); }
+    50% { background-position: 48% 52%; transform: scale(1.02); }
+    75% { background-position: 50% 50.5%; transform: scale(1.04); }
+    100% { background-position: 50% 50%; transform: scale(1); }
+}
+
 body {
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
     text-align: center;
@@ -17,15 +23,15 @@ body {
     overflow: hidden;
     background: url('body_background_2.jpg') no-repeat center center fixed;
     background-size: cover;
-    animation: backgroundVibrate 1s infinite linear; /* Slower & Softer Vibration */
+    animation: hypnoticGravity 6s infinite ease-in-out alternate;
+    transition: transform 0.3s ease-out;
 }
-@keyframes backgroundVibrate {
-    0% { background-position: center center; }  
-    25% { background-position: calc(50% + 0.5px) calc(50% + 0.5px); }  
-    50% { background-position: calc(50% - 0.5px) calc(50% - 0.5px); }  
-    75% { background-position: calc(50% + 0.5px) calc(50% - 0.5px); }  
-    100% { background-position: calc(50% - 0.5px) calc(50% + 0.5px); }  
+
+/* 🔥 Parallax Hover Effect (Mouse Move Reaction) */
+body:hover {
+    transition: transform 0.2s ease-out;
 }
+
 /* Game Header Styling */
 .game-header {
     position: absolute;
@@ -104,3 +110,6 @@ canvas {
 .zoom {
     animation: playerZoom 0.3s ease-in-out;
 }
+
+
+
