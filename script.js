@@ -178,13 +178,24 @@ function update() {
     
     
     function showGameOverScreen() {
-        const gameOverScreen = document.createElement("div");
-        gameOverScreen.id = "gameOverScreen";
-        gameOverScreen.innerHTML = `
-            <h2>Game Over</h2>
-            <p>Score: ${score}</p>
-            <button id="restartButton">Restart</button>
-        `;
+         // 🔥 Get highest score from localStorage
+    let highestScore = localStorage.getItem("highestScore") || 0;
+    
+    // 🏆 Update highest score if current score is greater
+    if (score > highestScore) {
+        highestScore = score;
+        localStorage.setItem("highestScore", highestScore);
+    }
+
+    const gameOverScreen = document.createElement("div");
+    gameOverScreen.id = "gameOverScreen";
+    gameOverScreen.innerHTML = `
+        <h2>Game Over</h2>
+        <p>Your Score: ${score}</p>
+        <p>Highest Score: ${highestScore}</p>
+        <button id="restartButton">Restart</button>
+    `;
+
 
         // 🎨 Styling for Game Over Screen
         gameOverScreen.style.position = "fixed";
@@ -251,7 +262,7 @@ function update() {
         powerUp.x -= 4;
         if (player.x < powerUp.x + powerUp.width && player.x + player.width > powerUp.x) {
             player.health++;
-            player.bulletCount += 5; // 🎯 **Power-Up lene se 5 bullets badhengi**
+            player.bulletCount += 5;// 🎯 **Power-Up lene se 5 bullets badhengi**
             powerUps.splice(i, 1);
             updateScoreHealth(); // 🎯 PowerUp se health badh gayi
             sounds.powerUp.cloneNode().play();
