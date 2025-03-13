@@ -1,11 +1,24 @@
-document.addEventListener("mousemove", (event) => {
-    let x = (event.clientX / window.innerWidth - 0.5) * 15;
-    let y = (event.clientY / window.innerHeight - 0.5) * 15;
-    document.body.style.transform = `translate(${x}px, ${y}px) scale(1.02)`;
-});
-// 🎯 Canvas Setup
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
+
+
+
+
+// 🎯 Canvas Setup
+
+let mouseX = 0, mouseY = 0;
+document.addEventListener("mousemove", (event) => {
+    mouseX = (event.clientX / window.innerWidth - 0.5) * 15;
+    mouseY = (event.clientY / window.innerHeight - 0.5) * 15;
+});
+
+function updateMouseMove() {
+    document.body.style.transform = `translate(${mouseX}px, ${mouseY}px) scale(1.02)`;
+    requestAnimationFrame(updateMouseMove);
+}
+updateMouseMove();
+
+
 
 // 🔊 Load Sounds
 const sounds = {
@@ -36,21 +49,16 @@ images.enemy.src = "dianasore.png";
 images.powerUp.src = "powerup.png";
 
 // Check if all images are loaded
-let imagesLoaded = 0;
-const totalImages = Object.keys(images).length;
 
-Object.values(images).forEach(img => {
-    img.onload = () => {
-        imagesLoaded++;
-        if (imagesLoaded === totalImages) {
-            console.log("✅ All images loaded successfully!");
-            gameLoop();  // Start game only after all images are loaded
-        }
-    };
-    img.onerror = () => {
-        console.error(`❌ Error loading image: ${img.src}`);
-    };
-});
+
+Promise.all(Object.values(images).map(img => new Promise((resolve, reject) => {
+    img.onload = resolve;
+    img.onerror = reject;
+}))).then(() => {
+    console.log("✅ All images loaded successfully!");
+    gameLoop();
+}).catch(error => console.error("❌ Image loading failed:", error));
+
 
 
 console.log("🔄 Checking image loading...");
@@ -142,7 +150,7 @@ function update() {
         player.dy = 0;
         player.isJumping = false;
     }
-
+    
     // Update Enemies
     enemies = enemies.filter(enemy => enemy.x + enemy.width > 0);
     enemies.forEach((enemy, i) => {
@@ -252,11 +260,6 @@ function update() {
         gameLoop();
     }
 
-
-
-
-
-
     // Update PowerUps
     powerUps.forEach((powerUp, i) => {
         powerUp.x -= 4;
@@ -270,10 +273,14 @@ function update() {
     });
 }
 
+const background = new Image();
+background.src = "body_background_2.jpg"; // Apna correct path likho
+
 // 🎨 Draw Game Elements
 function draw() {
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
     drawPlayer();
     player.bullets.forEach((bullet, index) => {
         bullet.x += 15;  // 🔥 Bullet Speed
@@ -294,11 +301,18 @@ function draw() {
 }
 
 // 🎮 Game Loop
-function gameLoop() {
-    update();
-    draw();
+let lastFrameTime = 0;
+const FRAME_DELAY = 16;  // ~60 FPS (1000ms / 60)
+
+function gameLoop(currentTime) {
+    if (currentTime - lastFrameTime >= FRAME_DELAY) {
+        lastFrameTime = currentTime;
+        update();
+        draw();
+    }
     if (!isGameOver) requestAnimationFrame(gameLoop);
 }
+
 
 // 🕹️ Controls
 window.addEventListener("keydown", (e) => {
