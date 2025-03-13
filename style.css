@@ -83,6 +83,12 @@ h1 {
     text-shadow: 0 0 10px red, 0 0 20px darkred;
 }
 
+.bullets{
+    color: #00ff0a;
+    text-shadow: 0 0 10px rgb(20, 255, 90), 0 0 20px rgb(0, 139, 7);
+
+}
+
 /* Responsive Adjustments */
 @media (max-width: 768px) {
     h1 { font-size: 1.8rem; }

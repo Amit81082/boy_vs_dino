@@ -91,6 +91,8 @@ let player = {
     x: 30, y: 0, width: 150, height: 150, dy: 0,
     gravity: 0.3, jumpPower: -12, isJumping: false,
     bullets: [], health: 3, scale: 1,
+    bulletCount: 10,  // 🔫 Player ke paas shuru me 10 bullets hongi
+
     lastShotTime: 0, shootCooldown: 200 // Cooldown in milliseconds
 };
 resizeCanvas();
@@ -125,7 +127,9 @@ function drawPlayer() {
 function updateScoreHealth() {
     document.querySelector(".score").innerText = `Score: ${score}`;
     document.querySelector(".health").innerText = `Health: ${player.health}`;
+    document.querySelector(".bullets").innerText = `Bullets: ${player.bulletCount}`;
 }
+
 
 // 🔄 Update Game State
 function update() {
@@ -160,9 +164,9 @@ function update() {
             updateScoreHealth(); // 🏆 Health update
             if (player.health <= 0) {
                 isGameOver = true;
+                sounds.gameOver.play();
                 player.width = 0;
                 player.height = 0;
-                sounds.gameOver.play();
                 
                 showGameOverScreen(); // 🔥 Game Over Screen दिखाने के लिए नई function call की
             }
@@ -219,6 +223,7 @@ function update() {
         document.getElementById("gameOverScreen").remove();
         score = 0;
         player.health = 3;
+        player.bulletCount = 0;
         isGameOver = false;
         enemies = [];
         powerUps = [];
@@ -228,7 +233,8 @@ function update() {
         width: 150, height: 150, dy: 0,
         gravity: 0.3, jumpPower: -12, isJumping: false,
         bullets: [], health: 3, scale: 1,
-        lastShotTime: 0, shootCooldown: 200
+        lastShotTime: 0, shootCooldown: 200,
+        bulletCount: 10  // 🔫 **Restart hone ke baad 10 bullets wapas milengi**
     };
         player.bullets = [];
         updateScoreHealth();
@@ -245,6 +251,7 @@ function update() {
         powerUp.x -= 4;
         if (player.x < powerUp.x + powerUp.width && player.x + player.width > powerUp.x) {
             player.health++;
+            player.bulletCount += 5; // 🎯 **Power-Up lene se 5 bullets badhengi**
             powerUps.splice(i, 1);
             updateScoreHealth(); // 🎯 PowerUp se health badh gayi
             sounds.powerUp.cloneNode().play();
@@ -293,7 +300,11 @@ window.addEventListener("keydown", (e) => {
 canvas.addEventListener("click", () => {
     let currentTime = Date.now();
 
-
+// 🔴 Agar bullets khatam ho gayi to fire mat karo
+if (player.bulletCount <= 0) {
+    console.log("❌ No bullets left!");
+    return;
+}
 
     if (currentTime - player.lastShotTime >= player.shootCooldown) {
         player.lastShotTime = currentTime;
@@ -307,6 +318,10 @@ canvas.addEventListener("click", () => {
         });
 
         sounds.bullet.cloneNode().play();
+
+          // 🔴 **Bullet Count Decrease karna**
+          player.bulletCount--;
+          updateScoreHealth(); // 📊 UI Update
 
         // 🔥 Smooth Scale Effect
         let scaleUp = 1.1;
