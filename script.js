@@ -1,3 +1,8 @@
+document.addEventListener("mousemove", (event) => {
+    let x = (event.clientX / window.innerWidth - 0.5) * 15;
+    let y = (event.clientY / window.innerHeight - 0.5) * 15;
+    document.body.style.transform = `translate(${x}px, ${y}px) scale(1.02)`;
+});
 // 🎯 Canvas Setup
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
@@ -110,6 +115,7 @@ function spawnPowerUp() {
 
 // 🏃 Draw Functions
 function drawPlayer() {
+    if (!player) return;
     ctx.save();
     ctx.translate(player.x + player.width / 2, player.y + player.height / 2);
     ctx.scale(player.scale, player.scale);
@@ -154,13 +160,19 @@ function update() {
             updateScoreHealth(); // 🏆 Health update
             if (player.health <= 0) {
                 isGameOver = true;
+                player.width = 0;
+                player.height = 0;
                 sounds.gameOver.play();
+                
                 showGameOverScreen(); // 🔥 Game Over Screen दिखाने के लिए नई function call की
             }
+            
         }
     });
 
-
+    
+    
+    
     function showGameOverScreen() {
         const gameOverScreen = document.createElement("div");
         gameOverScreen.id = "gameOverScreen";
@@ -203,13 +215,23 @@ function update() {
 
 
     function restartGame() {
+        
         document.getElementById("gameOverScreen").remove();
         score = 0;
         player.health = 3;
         isGameOver = false;
         enemies = [];
         powerUps = [];
+        // 🎮 Player ko dobara create karo!
+    player = {
+        x: 30, y: canvas.height - 150 - 10, 
+        width: 150, height: 150, dy: 0,
+        gravity: 0.3, jumpPower: -12, isJumping: false,
+        bullets: [], health: 3, scale: 1,
+        lastShotTime: 0, shootCooldown: 200
+    };
         player.bullets = [];
+        updateScoreHealth();
         gameLoop();
     }
 
@@ -232,6 +254,7 @@ function update() {
 
 // 🎨 Draw Game Elements
 function draw() {
+
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     drawPlayer();
     player.bullets.forEach((bullet, index) => {
@@ -322,8 +345,3 @@ window.addEventListener("resize", () => {
 });
 resizeCanvas();
 gameLoop();
-document.addEventListener("mousemove", (event) => {
-    let x = (event.clientX / window.innerWidth - 0.5) * 10;
-    let y = (event.clientY / window.innerHeight - 0.5) * 10;
-    document.body.style.transform = `translate(${x}px, ${y}px)`;
-});
