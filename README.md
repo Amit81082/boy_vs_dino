@@ -16,7 +16,7 @@
 
 ## 🎮 Play Now
 
-🔗 **Live Demo:** [Click here to play](#) *(https://amit81082.github.io/boy_vs_dino/)*
+🔗 **Live Demo:** boyvsdino.netlify.app
 
 
 ## 🎮 Controls
